@@ -1,0 +1,3 @@
+SUBDIRS = src extras
+
+EXTRA_DIST = TODO BUGS
