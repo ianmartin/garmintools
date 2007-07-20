@@ -1164,6 +1164,8 @@ garmin_save ( garmin_data * data, const char * filename, const char * dir )
 
 	if ( (wrote = write(fd,buf,packed)) != packed ) {
 	  /* write error! */
+	  printf("write of %d bytes returned %d: %s\n",
+		 packed,wrote,strerror(errno));
 	}
 	close(fd);
 
@@ -1173,6 +1175,7 @@ garmin_save ( garmin_data * data, const char * filename, const char * dir )
 
       } else {
 	/* malloc error */
+	printf("malloc(%d): %s\n",bytes + GARMIN_HEADER, strerror(errno));
       }
     } else {
       /* problem creating file. */
@@ -1180,6 +1183,7 @@ garmin_save ( garmin_data * data, const char * filename, const char * dir )
     }
   } else {
     /* don't write empty data */
+    printf("%s: garmin_data_size was 0\n",path);
   }
 
   return bytes;

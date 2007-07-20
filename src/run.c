@@ -36,6 +36,7 @@ get_run_track_lap_info ( garmin_data * run,
     *last_lap_index  = d1010->last_lap_index;
     break;
   default:
+    printf("get_run_track_lap_info: run type %d invalid!\n",run->type);
     ok = 0;
     break;
   }
@@ -62,6 +63,7 @@ get_lap_index ( garmin_data * lap, uint32 * lap_index )
     *lap_index = d1011->index;
     break;
   default:
+    printf("get_lap_index: lap type %d invalid!\n",lap->type);
     ok = 0;
     break;
   }
@@ -88,6 +90,7 @@ get_lap_start_time ( garmin_data * lap, time_type * start_time )
     *start_time = d1011->start_time + TIME_OFFSET;
     break;
   default:
+    printf("get_lap_start_time: lap type %d invalid!\n",lap->type);
     ok = 0;
     break;
   }
@@ -131,6 +134,7 @@ get_track ( garmin_list * points, uint32 trk_index )
 	}
 	break;
       default:
+	printf("get_track: point type %d invalid!\n",n->data->type);
 	break;
       }
     }
@@ -151,9 +155,9 @@ garmin_save_runs ( garmin_unit * garmin )
   garmin_data *       data2;
   garmin_data *       rlaps;
   garmin_data *       rtracks;
-  garmin_list *       runs;
-  garmin_list *       laps;
-  garmin_list *       tracks;
+  garmin_list *       runs   = NULL;
+  garmin_list *       laps   = NULL;
+  garmin_list *       tracks = NULL;
   garmin_data *       rlist;
   garmin_list_node *  n;
   garmin_list_node *  m;
@@ -178,6 +182,10 @@ garmin_save_runs ( garmin_unit * garmin )
   if ( filedir == NULL ) {
     filedir = ".";
   }
+
+  printf("Extracting data from Garmin %s\n",
+	 garmin->product.product_description);
+  printf("Files will be saved in '%s'\n",filedir);
 
   if ( (data = garmin_get(garmin,GET_RUNS)) != NULL ) {
 
@@ -211,7 +219,9 @@ garmin_save_runs ( garmin_unit * garmin )
 	    if ( get_lap_index(m->data,&l_idx) != 0 &&
 		 l_idx >= f_lap && l_idx <= l_lap ) {	      
 	      garmin_list_append(rlaps->data,m->data);
-	      if ( l_idx == f_lap ) get_lap_start_time(m->data,&start);
+	      if ( l_idx == f_lap ) {
+		get_lap_start_time(m->data,&start);
+	      }
 	    }
 	  }
 
@@ -243,6 +253,8 @@ garmin_save_runs ( garmin_unit * garmin )
 	    } else {
 	      printf("Skipped: %s/%s\n",filepath,filename);
 	    }
+	  } else {
+	    printf("Start time of first lap not found!\n");
 	  }
 
 	  /* Free the temporary lists we were using. */
@@ -263,8 +275,25 @@ garmin_save_runs ( garmin_unit * garmin )
 	  }
 	}
       }
+    } else {
+      if ( data0 == NULL ) {
+	printf("Toplevel data missing element 0 (runs)\n");
+      } else if ( runs == NULL ) {
+	printf("No runs extracted!\n");
+      }
+      if ( data1 == NULL ) {
+	printf("Toplevel data missing element 1 (laps)\n");
+      } else if ( laps == NULL ) {
+	printf("No laps extracted!\n");
+      }
+      if ( data2 == NULL ) {
+	printf("Toplevel data missing element 2 (tracks)\n");
+      } else if ( tracks == NULL ) {
+	printf("No tracks extracted!\n");
+      }
     }
-
     garmin_free_data(data);
+  } else {
+    printf("Unable to extract any data!\n");
   }
 }
