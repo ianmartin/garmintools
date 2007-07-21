@@ -1900,6 +1900,7 @@ typedef struct garmin_unit {
   garmin_protocols           protocol;
   garmin_datatypes           datatype;
   garmin_usb                 usb;
+  int                        verbose;   /* this may become a 'flags' field. */
 } garmin_unit;
 
 

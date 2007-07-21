@@ -2,8 +2,12 @@
 
 	0.01 - Initial version
 
-20 Jun 2007	Dave Bailey <dave at daveb dot net>
+20 Jul 2007	Dave Bailey <dave at daveb dot net>
 
 	0.02 - Added more error output and improved garmin_dump output.
 
-	
+21 Jul 2007	Dave Bailey <dave at daveb dot net>
+
+	0.03 - Added a -v option to garmin_save_runs and garmin_get_info
+	       for verbose output and debugging.
+	     - Added a "verbose" field to struct garmin_unit.

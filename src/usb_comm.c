@@ -47,13 +47,13 @@ garmin_open ( garmin_unit * garmin )
 	if ( di->descriptor.idVendor  == GARMIN_USB_VID &&
 	     di->descriptor.idProduct == GARMIN_USB_PID ) {
 
-#if 0
-	  printf("[garmin] found VID %04x, PID %04x on %s/%s\n",
-		 di->descriptor.idVendor,
-		 di->descriptor.idProduct,
-		 bi->dirname,
-		 di->filename);
-#endif
+	  if ( garmin->verbose != 0 ) {
+	    printf("[garmin] found VID %04x, PID %04x on %s/%s\n",
+		   di->descriptor.idVendor,
+		   di->descriptor.idProduct,
+		   bi->dirname,
+		   di->filename);
+	  }
 
 	  garmin->usb.handle = usb_open(di);
 	  garmin->usb.read_bulk = 0;
@@ -205,11 +205,9 @@ garmin_read ( garmin_unit * garmin, garmin_packet * p )
     }
   }
 
-#if 0
-  if ( r >= 0 ) {
+  if ( garmin->verbose != 0 && r >= 0 ) {
     garmin_print_packet(p,GARMIN_DIR_READ,stdout);
   }
-#endif
 
   return r;
 }
@@ -224,9 +222,10 @@ garmin_write ( garmin_unit * garmin, garmin_packet * p )
   garmin_open(garmin);
 
   if ( garmin->usb.handle != NULL ) {
-#if 0
-    garmin_print_packet(p,GARMIN_DIR_WRITE,stdout);
-#endif
+
+    if ( garmin->verbose != 0 ) {
+      garmin_print_packet(p,GARMIN_DIR_WRITE,stdout);
+    }
 
     r = usb_bulk_write(garmin->usb.handle,
 		       garmin->usb.bulk_out,

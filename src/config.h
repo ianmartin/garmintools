@@ -59,13 +59,13 @@
 #define PACKAGE_NAME "garmintools"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "garmintools 0.02"
+#define PACKAGE_STRING "garmintools 0.03"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "garmintools"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.02"
+#define PACKAGE_VERSION "0.03"
 
 /* Define to 1 if the C compiler supports function prototypes. */
 #define PROTOTYPES 1
@@ -82,7 +82,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-#define VERSION "0.02"
+#define VERSION "0.03"
 
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */

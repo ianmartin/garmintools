@@ -211,17 +211,40 @@ garmin_save_runs ( garmin_unit * garmin )
       for ( n = runs->head; n != NULL; n = n->next ) {
 	if ( get_run_track_lap_info(n->data,&trk,&f_lap,&l_lap) != 0 ) {
 
+	  if ( garmin->verbose != 0 ) {
+	    printf("[garmin] run: track [%d], laps [%d:%d]\n",trk,f_lap,l_lap);
+	  }
+
 	  start = 0;
 
 	  /* Get the laps. */
 
 	  rlaps = garmin_alloc_data(data_Dlist);
 	  for ( m = laps->head; m != NULL; m = m->next ) {
-	    if ( get_lap_index(m->data,&l_idx) != 0 &&
-		 l_idx >= f_lap && l_idx <= l_lap ) {	      
-	      garmin_list_append(rlaps->data,m->data);
-	      if ( l_idx == f_lap ) {
-		get_lap_start_time(m->data,&start);
+	    if ( get_lap_index(m->data,&l_idx) != 0 ) {
+
+	      if ( garmin->verbose != 0 ) {
+		printf("[garmin] lap: index [%d]\n",l_idx);
+	      }
+
+	      if ( l_idx >= f_lap && l_idx <= l_lap ) {
+
+		if ( garmin->verbose != 0 ) {
+		  printf("[garmin] lap [%d] falls within laps [%d:%d]\n",
+			 l_idx,f_lap,l_lap);
+		}
+
+		garmin_list_append(rlaps->data,m->data);
+
+		if ( l_idx == f_lap ) {
+		  get_lap_start_time(m->data,&start);
+
+		  if ( garmin->verbose != 0 ) {
+		    printf("[garmin] first lap [%d] has start time [%d]\n",
+			   l_idx,(int)start);
+		  }
+		}
+
 	      }
 	    }
 	  }
