@@ -2017,7 +2017,8 @@ garmin_data * garmin_read_via        ( garmin_unit *    garmin,
 				       appl_protocol    protocol );
 garmin_data * garmin_get             ( garmin_unit *    garmin, 
 				       garmin_get_type  what );
-int           garmin_init            ( garmin_unit *    garmin );
+int           garmin_init            ( garmin_unit *    garmin,
+				       int              verbose );
 
 
 /* ------------------------------------------------------------------------- */

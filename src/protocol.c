@@ -208,9 +208,11 @@ garmin_read_singleton ( garmin_unit *     garmin,
       d = garmin_unpack_packet(&p,type);
     } else {
       /* Expected pid but got something else. */
+      printf("garmin_read_singleton: expected %d, got %d\n",pid,ppid);
     }
   } else {
     /* Failed to read the packet off the link. */
+    printf("garmin_read_singleton: failed to read Pid_Records packet\n");
   }
 
   return d;
@@ -238,6 +240,11 @@ garmin_read_records ( garmin_unit *     garmin,
     if ( ppid == Pid_Records ) {
       expected = get_uint16(p.packet.data);
 
+      if ( garmin->verbose != 0 ) {
+	printf("[garmin] Pid_Records indicates %d packets to follow\n",
+	       expected);
+      }
+
       /* Allocate a list for the records. */
 
       d = garmin_alloc_data(data_Dlist);
@@ -253,6 +260,10 @@ garmin_read_records ( garmin_unit *     garmin,
 	if ( ppid == Pid_Xfer_Cmplt ) {
 	  if ( got != expected ) {
 	    /* Incorrect number of packets received. */
+	    printf("garmin_read_records: expected %d packets, got %d\n",
+		   expected,got);
+	  } else if ( garmin->verbose != 0 ) {
+	    printf("[garmin] all %d expected packets received\n",got);
 	  }
 	  done = 1;
 	} else if ( ppid == pid ) {
@@ -265,9 +276,11 @@ garmin_read_records ( garmin_unit *     garmin,
       }
     } else {
       /* Expected Pid_Records but got something else. */
+      printf("garmin_read_records: expected Pid_Records, got %d\n",ppid);
     }
   } else {
     /* Failed to read the Pid_Records packet off the link. */
+    printf("garmin_read_records: failed to read Pid_Records packet\n");
   }
 
   return d;
@@ -296,6 +309,11 @@ garmin_read_records2 ( garmin_unit *     garmin,
     ppid = garmin_gpid(link,garmin_packet_id(&p));
     if ( ppid == Pid_Records ) {
       expected = get_uint16(p.packet.data);
+
+      if ( garmin->verbose != 0 ) {
+	printf("[garmin] Pid_Records indicates %d packets to follow\n",
+	       expected);
+      }
       
       /* Allocate a list for the records. */
 
@@ -308,6 +326,10 @@ garmin_read_records2 ( garmin_unit *     garmin,
 	  /* transfer complete! */
 	  if ( got != expected ) {
 	    /* wrong number of packets received! */
+	    printf("garmin_read_records2: expected %d packets, got %d\n",
+		   expected,got);
+	  } else if ( garmin->verbose != 0 ) {
+	    printf("[garmin] all %d expected packets received\n",got);
 	  }
 	  break;
 	}
@@ -350,12 +372,15 @@ garmin_read_records2 ( garmin_unit *     garmin,
       }
       if ( state < 0 ) {
 	/* Unexpected packet received. */
+	printf("garmin_read_records2: unexpected packet %d received\n",ppid);
       }
     } else {
       /* Expected Pid_Records but got something else. */
+      printf("garmin_read_records2: expected Pid_Records, got %d\n",ppid);
     }
   } else {
     /* Failed to read the Pid_Records packet off the link. */
+    printf("garmin_read_records2: failed to read Pid_Records packet\n");
   }
 
   return d;
@@ -387,6 +412,11 @@ garmin_read_records3 ( garmin_unit *     garmin,
     if ( ppid == Pid_Records ) {
       expected = get_uint16(p.packet.data);
 
+      if ( garmin->verbose != 0 ) {
+	printf("[garmin] Pid_Records indicates %d packets to follow\n",
+	       expected);
+      }
+
       /* Allocate a list for the records. */
 
       d = garmin_alloc_data(data_Dlist);
@@ -398,6 +428,10 @@ garmin_read_records3 ( garmin_unit *     garmin,
 	  /* transfer complete! */
 	  if ( got != expected ) {
 	    /* wrong number of packets received! */
+	    printf("garmin_read_records3: expected %d packets, got %d\n",
+		   expected,got);
+	  } else if ( garmin->verbose != 0 ) {
+	    printf("[garmin] all %d expected packets received\n",got);
 	  }
 	  break;
 	}
@@ -449,12 +483,15 @@ garmin_read_records3 ( garmin_unit *     garmin,
       }
       if ( state < 0 ) {
 	/* Unexpected packet received. */
+	printf("garmin_read_records3: unexpected packet %d received\n",ppid);
       }
     } else {
       /* Expected Pid_Records but got something else. */
+      printf("garmin_read_records3: expected Pid_Records, got %d\n",ppid);
     }
   } else {
     /* Failed to read the Pid_Records packet off the link. */
+    printf("garmin_read_records3: failed to read Pid_Records packet\n");
   }
 
   return d;
@@ -1047,8 +1084,16 @@ garmin_read_via ( garmin_unit * garmin, appl_protocol protocol )
 {
   garmin_data * data = NULL;
 
-#define CASE_PROTOCOL(x) \
-  case appl_A##x: data = garmin_read_a##x(garmin); break
+#define CASE_PROTOCOL(x)                                                      \
+  case appl_A##x:                                                             \
+    if ( garmin->verbose != 0 ) {                                             \
+      printf("[garmin] -> garmin_read_a" #x "\n");                            \
+    }                                                                         \
+    data = garmin_read_a##x(garmin);                                          \
+    if ( garmin->verbose != 0 ) {                                             \
+      printf("[garmin] <- garmin_read_a" #x "\n");                            \
+    }                                                                         \
+    break
 
   switch ( protocol ) {
   CASE_PROTOCOL(100);   /* waypoints */
@@ -1114,9 +1159,11 @@ garmin_get ( garmin_unit * garmin, garmin_get_type what )
 /* Initialize a connection with a Garmin unit. */
 
 int
-garmin_init ( garmin_unit * garmin )
+garmin_init ( garmin_unit * garmin, int verbose )
 {
   memset(garmin,0,sizeof(garmin_unit));
+  garmin->verbose = verbose;
+
   if ( garmin_open(garmin) != 0 ) {
     garmin_start_session(garmin);
     garmin_read_a000_a001(garmin);

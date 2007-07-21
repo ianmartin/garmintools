@@ -177,11 +177,11 @@ garmin_save_runs ( garmin_unit * garmin )
   if ( (filedir = getenv("GARMIN_SAVE_RUNS")) != NULL ) {
     filedir = realpath(filedir,path);
     if ( filedir == NULL ) {
-      printf("GARMIN_SAVE_RUNS: %s\n",strerror(errno));
+      printf("GARMIN_SAVE_RUNS: %s: %s\n",filedir,strerror(errno));
     }
   }
   if ( filedir == NULL ) {
-    filedir = ".";
+    filedir = getcwd(path,sizeof(path));
   }
 
   printf("Extracting data from Garmin %s\n",
@@ -205,6 +205,18 @@ garmin_save_runs ( garmin_unit * garmin )
     if ( data0 != NULL && (runs   = data0->data) != NULL &&
 	 data1 != NULL && (laps   = data1->data) != NULL &&
 	 data2 != NULL && (tracks = data2->data) != NULL ) {
+
+      /* Print some debug output if requested. */
+
+      if ( garmin->verbose != 0 ) {
+	for ( m = laps->head; m != NULL; m = m->next ) {
+	  if ( get_lap_index(m->data,&l_idx) != 0 ) {
+	    printf("[garmin] lap: index [%d]\n",l_idx);
+	  } else {
+	    printf("[garmin] lap: index [??]\n");
+	  }
+	}
+      }
       
       /* For each run, get its laps and track points. */
 
@@ -222,13 +234,7 @@ garmin_save_runs ( garmin_unit * garmin )
 	  rlaps = garmin_alloc_data(data_Dlist);
 	  for ( m = laps->head; m != NULL; m = m->next ) {
 	    if ( get_lap_index(m->data,&l_idx) != 0 ) {
-
-	      if ( garmin->verbose != 0 ) {
-		printf("[garmin] lap: index [%d]\n",l_idx);
-	      }
-
 	      if ( l_idx >= f_lap && l_idx <= l_lap ) {
-
 		if ( garmin->verbose != 0 ) {
 		  printf("[garmin] lap [%d] falls within laps [%d:%d]\n",
 			 l_idx,f_lap,l_lap);
@@ -238,13 +244,11 @@ garmin_save_runs ( garmin_unit * garmin )
 
 		if ( l_idx == f_lap ) {
 		  get_lap_start_time(m->data,&start);
-
 		  if ( garmin->verbose != 0 ) {
 		    printf("[garmin] first lap [%d] has start time [%d]\n",
 			   l_idx,(int)start);
 		  }
 		}
-
 	      }
 	    }
 	  }
