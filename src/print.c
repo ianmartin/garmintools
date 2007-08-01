@@ -56,13 +56,13 @@
 	    y,z,garmin_symbol_name(z));              \
   } while ( 0 )
 
-#define GARMIN_TAGU8B(x,y,z)                         \
+#define GARMIN_TAGU8B(x,y,z,l)			     \
   do {                                               \
     int u8b;                                         \
                                                      \
     open_tag(y,fp,spaces+x);                         \
     print_spaces(fp,spaces+x);                       \
-    for ( u8b = 0; u8b < sizeof(z); u8b++ ) {        \
+    for ( u8b = 0; u8b < l; u8b++ ) {                \
       fprintf(fp," 0x%02x",z[u8b]);                  \
     }                                                \
     fprintf(fp,"\n");                                \
@@ -457,7 +457,7 @@ garmin_print_d106 ( D106 * x, FILE * fp, int spaces )
   open_tag_with_type("waypoint",106,fp,spaces);
   GARMIN_TAGSTR(1,"class",(x->wpt_class)?"non-user":"user");
   if ( x->wpt_class != 0 ) {
-    GARMIN_TAGU8B(1,"subclass",x->subclass);
+    GARMIN_TAGU8B(1,"subclass",x->subclass,13);
   }
   GARMIN_TAGSTR(1,"ident",x->wpt_ident);
   GARMIN_TAGPOS(1,"position",x->posn);
@@ -551,7 +551,7 @@ garmin_print_d108 ( D108 * x, FILE * fp, int spaces )
   GARMIN_TAGSYM(1,"symbol",x->smbl);
   GARMIN_TAGSTR(1,"display",garmin_d103_dspl(x->dspl));
   GARMIN_TAGSTR(1,"class",garmin_d108_wpt_class(x->wpt_class));
-  GARMIN_TAGU8B(1,"subclass",x->subclass);
+  GARMIN_TAGU8B(1,"subclass",x->subclass,18);
   GARMIN_TAGHEX(1,"attr",x->attr);
   GARMIN_TAGSTR(1,"color",garmin_d108_color(x->color));
   if ( x->alt  < 1.0e24 ) GARMIN_TAGF32(1,"altitude",x->alt);
@@ -584,7 +584,7 @@ garmin_print_d109 ( D109 * x, FILE * fp, int spaces )
   GARMIN_TAGSTR(1,"color",garmin_d108_color(color));
   GARMIN_TAGSTR(1,"display",garmin_d103_dspl((x->dspl_color >> 5) & 0x03));
   GARMIN_TAGSTR(1,"class",garmin_d108_wpt_class(x->wpt_class));
-  GARMIN_TAGU8B(1,"subclass",x->subclass);
+  GARMIN_TAGU8B(1,"subclass",x->subclass,18);
   GARMIN_TAGHEX(1,"attr",x->attr);
   GARMIN_TAGHEX(1,"dtyp",x->dtyp);
   GARMIN_TAGU32(1,"ete",x->ete);
@@ -956,7 +956,7 @@ garmin_print_d210 ( D210 * x, FILE * fp, int spaces )
   print_spaces(fp,spaces);
   fprintf(fp,"<route_link type=\"210\" class=\"%s\" ident=\"%s\">\n",
 	  garmin_d210_class(x->class),x->ident);
-  GARMIN_TAGU8B(1,"route_link_subclass",x->subclass);
+  GARMIN_TAGU8B(1,"route_link_subclass",x->subclass,18);
   close_tag("route_link",fp,spaces);
 }
 
@@ -1407,7 +1407,6 @@ garmin_print_d906 ( D906 * x, FILE * fp, int spaces )
   }
 
   close_tag("lap",fp,spaces);
-
 }
 
 
@@ -1915,6 +1914,42 @@ garmin_print_d1013 ( D1013 * x, FILE * fp, int spaces )
 }
 
 
+/* --------------------------------------------------------------------------*/
+/* 7.4.XX  D1015 (Undocumented)                                              */
+/* --------------------------------------------------------------------------*/
+
+static void
+garmin_print_d1015 ( D1015 * lap, FILE * fp, int spaces )
+{
+  print_spaces(fp,spaces);
+  fprintf(fp,"<lap type=\"1011\" index=\"%d\"",lap->index);
+  garmin_print_dtime(lap->start_time,fp,"start");
+  garmin_print_ddist(lap->total_time,lap->total_dist,fp);
+  fprintf(fp," trigger=\"%s\">\n",
+	  garmin_d1011_trigger_method(lap->trigger_method));
+  if ( lap->begin.lat != 0x7fffffff && lap->begin.lon != 0x7fffffff ) {
+    GARMIN_TAGPOS(1,"begin_pos",lap->begin);
+  }
+  if ( lap->end.lat != 0x7fffffff && lap->end.lon != 0x7fffffff ) {
+    GARMIN_TAGPOS(1,"end_pos",lap->end);
+  }
+  GARMIN_TAGF32(1,"max_speed",lap->max_speed);
+  GARMIN_TAGINT(1,"calories",lap->calories);
+  if ( lap->avg_heart_rate != 0 ) {
+    GARMIN_TAGINT(1,"avg_hr",lap->avg_heart_rate);
+  }
+  if ( lap->max_heart_rate != 0 ) {
+    GARMIN_TAGINT(1,"max_hr",lap->max_heart_rate);
+  }
+  if ( lap->avg_cadence != 0xff ) {
+    GARMIN_TAGINT(1,"avg_cadence",lap->avg_cadence);
+  }
+  GARMIN_TAGSTR(1,"intensity",garmin_d1001_intensity(lap->intensity));
+  GARMIN_TAGU8B(1,"unknown",lap->unknown,5);  
+  close_tag("lap",fp,spaces);
+}
+
+
 /* ========================================================================= */
 /* garmin_print_data                                                         */
 /* ========================================================================= */
@@ -1982,6 +2017,7 @@ garmin_print_data ( garmin_data * d, FILE * fp, int spaces )
   CASE_PRINT(1011);
   CASE_PRINT(1012);
   CASE_PRINT(1013);
+  CASE_PRINT(1015);
   default:
     print_spaces(fp,spaces);
     fprintf(fp,"<data type=\"%d\"/>\n",d->type);

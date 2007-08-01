@@ -51,6 +51,7 @@ get_lap_index ( garmin_data * lap, uint32 * lap_index )
 {
   D1001 * d1001;
   D1011 * d1011;
+  D1015 * d1015;
 
   int ok = 1;
 
@@ -62,6 +63,10 @@ get_lap_index ( garmin_data * lap, uint32 * lap_index )
   case data_D1011:
     d1011      = lap->data;
     *lap_index = d1011->index;
+    break;
+  case data_D1015:
+    d1015      = lap->data;
+    *lap_index = d1015->index;
     break;
   default:
     printf("get_lap_index: lap type %d invalid!\n",lap->type);
@@ -78,6 +83,7 @@ get_lap_start_time ( garmin_data * lap, time_type * start_time )
 {
   D1001 * d1001;
   D1011 * d1011;
+  D1015 * d1015;
 
   int ok = 1;
 
@@ -89,6 +95,10 @@ get_lap_start_time ( garmin_data * lap, time_type * start_time )
   case data_D1011:
     d1011       = lap->data;
     *start_time = d1011->start_time + TIME_OFFSET;
+    break;
+  case data_D1015:
+    d1015       = lap->data;
+    *start_time = d1015->start_time + TIME_OFFSET;
     break;
   default:
     printf("get_lap_start_time: lap type %d invalid!\n",lap->type);
@@ -177,7 +187,8 @@ garmin_save_runs ( garmin_unit * garmin )
   if ( (filedir = getenv("GARMIN_SAVE_RUNS")) != NULL ) {
     filedir = realpath(filedir,path);
     if ( filedir == NULL ) {
-      printf("GARMIN_SAVE_RUNS: %s: %s\n",filedir,strerror(errno));
+      printf("GARMIN_SAVE_RUNS: %s: %s\n",
+	     getenv("GARMIN_SAVE_RUNS"),strerror(errno));
     }
   }
   if ( filedir == NULL ) {

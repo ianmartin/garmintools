@@ -28,7 +28,7 @@ libgarmin_la_SOURCES = \
 # Interfaces removed => c+1:0:0
 
 libgarmin_la_LDFLAGS = \
-	-version-info 4:0:1
+	-version-info 5:0:2
 
 bin_PROGRAMS = \
 	garmin_save_runs \

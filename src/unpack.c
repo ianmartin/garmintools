@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 #include "garmin.h"
 
 
@@ -1007,6 +1008,45 @@ garmin_unpack_d1013 ( D1013 * limits, uint8 ** pos )
 }
 
 
+/* --------------------------------------------------------------------------*/
+/* 7.4.XX  D1015 (Undocumented)                                              */
+/* --------------------------------------------------------------------------*/
+
+static void
+garmin_unpack_d1015 ( D1015 * lap, uint8 ** pos )
+{
+  GETU16(lap->index);
+  SKIP(2);
+  GETU32(lap->start_time);
+  GETU32(lap->total_time);
+  GETF32(lap->total_dist);
+  GETF32(lap->max_speed);
+  GETPOS(lap->begin);
+  GETPOS(lap->end);
+  GETU16(lap->calories);
+  GETU8(lap->avg_heart_rate);
+  GETU8(lap->max_heart_rate);
+  GETU8(lap->intensity);
+  GETU8(lap->avg_cadence);
+  GETU8(lap->trigger_method);
+
+  /* 
+     Garmin has not gotten back to me about what these fields mean, and
+     whether all of the bytes are needed or just, say, three of them.
+     This is annoying, because it means we may end up with .gmn files
+     that have oversized D1015 elements, but it shouldn't affect our
+     ability to read those files.  We don't make any assumptions about
+     the size of each element.
+  */
+
+  GETU8(lap->unknown[0]);
+  GETU8(lap->unknown[1]);
+  GETU8(lap->unknown[2]);
+  GETU8(lap->unknown[3]);
+  GETU8(lap->unknown[4]);
+}
+
+
 /* List */
 
 static void
@@ -1029,6 +1069,8 @@ garmin_unpack_dlist ( garmin_list * list, uint8 ** pos )
       garmin_list_append(list,garmin_unpack(pos,type));
     } else {
       /* list element has wrong list ID */
+      printf("garmin_unpack_dlist: list element had ID %d, expected ID %d\n",
+	     id,list->id);
     }
   }
 }
@@ -1055,6 +1097,8 @@ garmin_unpack_chunk ( uint8 ** pos )
     
     if ( version > GARMIN_VERSION ) {
       /* warning: version is more recent than supported. */
+      printf("garmin_unpack_chunk: version %.2f supported, %.2f found\n",
+	     GARMIN_VERSION/100.0, version/100.0);
     }
     
     /* This is the size of the packed data (not including the header) */
@@ -1074,14 +1118,15 @@ garmin_unpack_chunk ( uint8 ** pos )
 
     /* Double check - did we unpack the number of bytes we were supposed to? */
 
-    if ( unpacked != chunk ) {
-      
+    if ( unpacked != chunk ) {      
       /* unpacked the wrong number of bytes! */
-      
+      printf("garmin_unpack_chunk: unpacked %d bytes (expecting %d)\n",
+	     unpacked,chunk);
     }
     
   } else {
     /* unknown file format */
+    printf("garmin_unpack_chunk: not a .gmn file\n");
   }
 
   return data;
@@ -1117,6 +1162,7 @@ garmin_load ( const char * filename )
 	    garmin_list_append(list,garmin_unpack_chunk(&pos));
 	    if ( pos == start ) {
 	      /* did not unpack anything! */
+	      printf("garmin_load:  %s: nothing unpacked!\n",filename);
 	      break;
 	    }
 	  }
@@ -1136,17 +1182,21 @@ garmin_load ( const char * filename )
 
 	} else {
 	  /* read failed */
+	  printf("%s: read: %s\n",filename,strerror(errno));
 	}
 	free(buf);
       } else {
 	/* malloc failed */
+	printf("%s: malloc: %s\n",filename,strerror(errno));
       }
     } else {
       /* fstat failed */
+      printf("%s: fstat: %s\n",filename,strerror(errno));
     }
     close(fd);
   } else {
     /* open failed */
+    printf("%s: open: %s\n",filename,strerror(errno));
   }
 
   return data;
@@ -1174,7 +1224,7 @@ garmin_data *
 garmin_unpack ( uint8 **         pos, 
 		garmin_datatype  type )
 {
-  garmin_data *  d   = garmin_alloc_data(type);
+  garmin_data * d = garmin_alloc_data(type);
 
   /* Early exit if we were asked to allocate an unknown data type. */
 
@@ -1245,12 +1295,13 @@ garmin_unpack ( uint8 **         pos,
   CASE_DATA(1011);
   CASE_DATA(1012);
   CASE_DATA(1013);
-  default: break;
+  CASE_DATA(1015);
+  default: 
+    printf("garmin_unpack: data type %d not supported\n",type);
+    break;
   }
 
   return d;
 
 #undef CASE_DATA
 }
-
-

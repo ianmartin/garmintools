@@ -74,6 +74,7 @@ garmin_alloc_data ( garmin_datatype type )
   CASE_DATA(1011);
   CASE_DATA(1012);
   CASE_DATA(1013);
+  CASE_DATA(1015);
   default: d->data = NULL; break;
   }
 
@@ -411,7 +412,10 @@ garmin_data_size ( garmin_data * d )
 	DATASIZE0(1011);
 	DATASIZE0(1012);
 	DATASIZE0(1013);
-	default: break;
+	DATASIZE0(1015);
+	default:
+	  printf("garmin_data_size: data type %d not supported\n",d->type);
+	  break;
 	}
       }
     }

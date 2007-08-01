@@ -1009,6 +1009,38 @@ garmin_pack_d1013 ( D1013 * limits, uint8 ** pos )
 }
 
 
+/* --------------------------------------------------------------------------*/
+/* 7.4.XX  D1015 (Undocumented)                                              */
+/* --------------------------------------------------------------------------*/
+
+static void
+garmin_pack_d1015 ( D1015 * lap, uint8 ** pos )
+{
+  PUTU16(lap->index);
+  SKIP(2);
+  PUTU32(lap->start_time);
+  PUTU32(lap->total_time);
+  PUTF32(lap->total_dist);
+  PUTF32(lap->max_speed);
+  PUTPOS(lap->begin);
+  PUTPOS(lap->end);
+  PUTU16(lap->calories);
+  PUTU8(lap->avg_heart_rate);
+  PUTU8(lap->max_heart_rate);
+  PUTU8(lap->intensity);
+  PUTU8(lap->avg_cadence);
+  PUTU8(lap->trigger_method);
+
+  /* Hopefully we'll know what this stuff actually is someday. */
+
+  PUTU8(lap->unknown[0]);
+  PUTU8(lap->unknown[1]);
+  PUTU8(lap->unknown[2]);
+  PUTU8(lap->unknown[3]);
+  PUTU8(lap->unknown[4]);
+}
+
+
 /* List */
 
 static void
@@ -1285,7 +1317,10 @@ garmin_pack ( garmin_data * data, uint8 ** buf )
   CASE_DATA(1011);
   CASE_DATA(1012);
   CASE_DATA(1013);
-  default: break;
+  CASE_DATA(1015);
+  default:
+    printf("garmin_pack: data type %d not supported\n",data->type);
+    break;
   }
 #undef CASE_DATA
 

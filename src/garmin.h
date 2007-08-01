@@ -1339,6 +1339,26 @@ typedef struct D1013 {
 } D1013;
 
 
+typedef struct D1015 {
+  uint16                       index;
+  uint16                       unused;
+  time_type                    start_time;
+  uint32                       total_time;
+  float32                      total_dist;
+  float32                      max_speed;
+  position_type                begin;
+  position_type                end;
+  uint16                       calories;
+  uint8                        avg_heart_rate;
+  uint8                        max_heart_rate;
+  uint8                        intensity;
+  uint8                        avg_cadence;
+  uint8                        trigger_method;
+  /* FIXME - additional bytes are unknown */
+  uint8                        unknown[5];
+} D1015;
+
+
 typedef enum {
   data_Dnil  =    0,
   data_Dlist =    1,      /* List of data */
@@ -1403,6 +1423,7 @@ typedef enum {
   data_D1011 = 1011,      /* lap */
   data_D1012 = 1012,      /* course point */
   data_D1013 = 1013,      /* course limits */
+  data_D1015 = 1015,      /* lap */
   data_NUM_DATATYPES
 } garmin_datatype;
 
