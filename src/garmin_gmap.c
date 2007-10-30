@@ -61,7 +61,13 @@ get_gmap_data ( garmin_data *    data,
 
   if ( data != NULL ) {
     data = garmin_list_data(data,2);
-    if ( data->type == data_Dlist ) {
+
+    if ( data == NULL ) {
+
+      printf("get_gmap_data: no track points found\n");
+
+    } else if ( data->type == data_Dlist ) {
+
       dlist = data->data;
       
       *points = malloc(12 * dlist->elements);
@@ -139,7 +145,11 @@ get_gmap_data ( garmin_data *    data,
       sw->lon = DEG2SEMI(minlon);
 
       ok = 1;
+    } else {
+      printf("get_gmap_data: invalid track point list\n");
     }
+  } else {
+    printf("get_gmap_data: NULL data pointer\n");
   }
 
   return ok;
