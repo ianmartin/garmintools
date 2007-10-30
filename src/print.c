@@ -1922,7 +1922,7 @@ static void
 garmin_print_d1015 ( D1015 * lap, FILE * fp, int spaces )
 {
   print_spaces(fp,spaces);
-  fprintf(fp,"<lap type=\"1011\" index=\"%d\"",lap->index);
+  fprintf(fp,"<lap type=\"1015\" index=\"%d\"",lap->index);
   garmin_print_dtime(lap->start_time,fp,"start");
   garmin_print_ddist(lap->total_time,lap->total_dist,fp);
   fprintf(fp," trigger=\"%s\">\n",
