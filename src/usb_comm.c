@@ -27,7 +27,8 @@ garmin_close ( garmin_unit * garmin )
 
 /* 
    Open the USB connection with the first Garmin device we find.  Eventually,
-   I'd like to add the ability to select a particular device.
+   I'd like to add the ability to select a particular device.  Returns 1 on
+   success, 0 on failure.  Prints diagnostic information and errors to stdout.
 */
 
 int
@@ -35,6 +36,7 @@ garmin_open ( garmin_unit * garmin )
 {
   struct usb_bus *     bi;
   struct usb_device *  di;
+  int                  ok = 0;
   int                  i;
 
   if ( garmin->usb.handle == NULL ) {
@@ -57,47 +59,50 @@ garmin_open ( garmin_unit * garmin )
 
 	  garmin->usb.handle = usb_open(di);
 	  garmin->usb.read_bulk = 0;
+
 	  if ( garmin->usb.handle == NULL ) {
 	    printf("usb_open failed: %s\n",usb_strerror());
-	    exit(1);
-	  }
-
-	  if ( usb_set_configuration(garmin->usb.handle,1) < 0 ) {
+	  } else if ( usb_set_configuration(garmin->usb.handle,1) < 0 ) {
 	    printf("usb_set_configuration failed: %s\n",usb_strerror());
-	    exit(1);
-	  }
-
-	  if ( usb_claim_interface(garmin->usb.handle,0) < 0 ) {
+	  } else if ( usb_claim_interface(garmin->usb.handle,0) < 0 ) {
 	    printf("usb_claim_interface failed: %s\n",usb_strerror());
-	    exit(1);
-	  }
+	  } else {
 
-	  for ( i = 0; 
-		i < di->config->interface->altsetting->bNumEndpoints; 
-		i++ ) {
-	    struct usb_endpoint_descriptor * ep;
+	    /* We've succeeded in opening and claiming the interface */
 	    
-	    ep = &di->config->interface->altsetting->endpoint[i];
-	    switch ( ep->bmAttributes & USB_ENDPOINT_TYPE_MASK ) {
-	    case USB_ENDPOINT_TYPE_BULK:
-	      if ( ep->bEndpointAddress & USB_ENDPOINT_DIR_MASK ) {
-		garmin->usb.bulk_in = 
-		  ep->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK;
-	      } else {
-		garmin->usb.bulk_out = 
-		  ep->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK;
+	    ok = 1;
+
+	    /* Let's set the bulk and interrupt in and out endpoints. */
+
+	    for ( i = 0; 
+		  i < di->config->interface->altsetting->bNumEndpoints; 
+		  i++ ) {
+	      struct usb_endpoint_descriptor * ep;
+	      
+	      ep = &di->config->interface->altsetting->endpoint[i];
+	      switch ( ep->bmAttributes & USB_ENDPOINT_TYPE_MASK ) {
+	      case USB_ENDPOINT_TYPE_BULK:
+		if ( ep->bEndpointAddress & USB_ENDPOINT_DIR_MASK ) {
+		  garmin->usb.bulk_in = 
+		    ep->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK;
+		} else {
+		  garmin->usb.bulk_out = 
+		    ep->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK;
+		}
+		break;
+	      case USB_ENDPOINT_TYPE_INTERRUPT:
+		if ( ep->bEndpointAddress & USB_ENDPOINT_DIR_MASK ) {
+		  garmin->usb.intr_in = 
+		    ep->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK;
+		}
+		break;
+	      default:
+		break;
 	      }
-	      break;
-	    case USB_ENDPOINT_TYPE_INTERRUPT:
-	      if ( ep->bEndpointAddress & USB_ENDPOINT_DIR_MASK ) {
-		garmin->usb.intr_in = 
-		  ep->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK;
-	      }
-	      break;
-	    default:
-	      break;
 	    }
 	  }
+
+	  /* We've found what should be the Garmin interface. */
 
 	  break;
 	}
@@ -106,7 +111,19 @@ garmin_open ( garmin_unit * garmin )
     }
   }
 
-  return (garmin->usb.handle != NULL);
+  /* 
+     If ok is still 0, we should close the usb handle (if it's not NULL) 
+     and reset it to NULL.  We don't have to release the interface, because
+     if we had managed to claim it in the first place, ok would have been
+     set to 1.
+  */
+
+  if ( ok == 0 && garmin->usb.handle != NULL ) {
+    usb_close(garmin->usb.handle);
+    garmin->usb.handle = NULL;
+  }
+
+  return ok;
 }
 
 
