@@ -36,8 +36,7 @@ garmin_open ( garmin_unit * garmin )
 {
   struct usb_bus *     bi;
   struct usb_device *  di;
-  int                  ok = 1;
-  int                  err;
+  int                  err = 0;
   int                  i;
 
   if ( garmin->usb.handle == NULL ) {
@@ -84,7 +83,7 @@ garmin_open ( garmin_unit * garmin )
 	    printf("[garmin] usb_claim_interface[0] succeeded\n");
 	  }
 
-	  if ( (ok = !err) != 0 ) {
+	  if ( !err ) {
 
 	    /* 
 	       We've succeeded in opening and claiming the interface 
@@ -139,21 +138,20 @@ garmin_open ( garmin_unit * garmin )
   }
 
   /* 
-     If ok is still 0, we should close the usb handle (if it's not NULL) 
-     and reset it to NULL.  We don't have to release the interface, because
-     if we had managed to claim it in the first place, ok would have been
-     set to 1.
+     If the USB handle is open but we experienced an error in setting the
+     configuration or claiming the interface, close the USB handle and set
+     it to NULL.
   */
 
-  if ( garmin->usb.handle != NULL && ok == 0 ) {
+  if ( garmin->usb.handle != NULL && err != 0 ) {
     if ( garmin->verbose != 0 ) {
-      printf("[garmin] (ok = %d) usb_close(%p)\n",ok,garmin->usb.handle);
+      printf("[garmin] (err = %d) usb_close(%p)\n",err,garmin->usb.handle);
     }
     usb_close(garmin->usb.handle);
     garmin->usb.handle = NULL;
   }
 
-  return ok;
+  return (garmin->usb.handle != NULL);
 }
 
 
