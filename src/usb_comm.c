@@ -36,7 +36,8 @@ garmin_open ( garmin_unit * garmin )
 {
   struct usb_bus *     bi;
   struct usb_device *  di;
-  int                  ok = 0;
+  int                  ok = 1;
+  int                  err;
   int                  i;
 
   if ( garmin->usb.handle == NULL ) {
@@ -60,19 +61,35 @@ garmin_open ( garmin_unit * garmin )
 	  garmin->usb.handle = usb_open(di);
 	  garmin->usb.read_bulk = 0;
 
+	  err = 0;
+
 	  if ( garmin->usb.handle == NULL ) {
 	    printf("usb_open failed: %s\n",usb_strerror());
-	  } else if ( usb_set_configuration(garmin->usb.handle,1) < 0 ) {
+	    err = 1;
+	  } else if ( !err && garmin->verbose != 0 ) {
+	    printf("[garmin] usb_open = %p\n",garmin->usb.handle);
+	  }
+
+	  if ( !err && usb_set_configuration(garmin->usb.handle,1) < 0 ) {
 	    printf("usb_set_configuration failed: %s\n",usb_strerror());
-	  } else if ( usb_claim_interface(garmin->usb.handle,0) < 0 ) {
+	    err = 1;
+	  } else if ( !err && garmin->verbose != 0 ) {
+	    printf("[garmin] usb_set_configuration[1] succeeded\n");
+	  }
+
+	  if ( !err && usb_claim_interface(garmin->usb.handle,0) < 0 ) {
 	    printf("usb_claim_interface failed: %s\n",usb_strerror());
-	  } else {
+	    err = 1;
+	  } else if ( !err && garmin->verbose != 0 ) {
+	    printf("[garmin] usb_claim_interface[0] succeeded\n");
+	  }
 
-	    /* We've succeeded in opening and claiming the interface */
-	    
-	    ok = 1;
+	  if ( (ok = !err) != 0 ) {
 
-	    /* Let's set the bulk and interrupt in and out endpoints. */
+	    /* 
+	       We've succeeded in opening and claiming the interface 
+	       Let's set the bulk and interrupt in and out endpoints. 
+	    */
 
 	    for ( i = 0; 
 		  i < di->config->interface->altsetting->bNumEndpoints; 
@@ -85,15 +102,24 @@ garmin_open ( garmin_unit * garmin )
 		if ( ep->bEndpointAddress & USB_ENDPOINT_DIR_MASK ) {
 		  garmin->usb.bulk_in = 
 		    ep->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK;
+		  if ( garmin->verbose != 0 ) {
+		    printf("[garmin] bulk IN  = %d\n",garmin->usb.bulk_in);
+		  }
 		} else {
 		  garmin->usb.bulk_out = 
 		    ep->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK;
+		  if ( garmin->verbose != 0 ) {
+		    printf("[garmin] bulk OUT = %d\n",garmin->usb.bulk_out);
+		  }
 		}
 		break;
 	      case USB_ENDPOINT_TYPE_INTERRUPT:
 		if ( ep->bEndpointAddress & USB_ENDPOINT_DIR_MASK ) {
 		  garmin->usb.intr_in = 
 		    ep->bEndpointAddress & USB_ENDPOINT_ADDRESS_MASK;
+		  if ( garmin->verbose != 0 ) {
+		    printf("[garmin] intr IN  = %d\n",garmin->usb.intr_in);
+		  }
 		}
 		break;
 	      default:
@@ -107,6 +133,7 @@ garmin_open ( garmin_unit * garmin )
 	  break;
 	}
       }
+
       if ( garmin->usb.handle != NULL ) break;
     }
   }
@@ -118,7 +145,10 @@ garmin_open ( garmin_unit * garmin )
      set to 1.
   */
 
-  if ( ok == 0 && garmin->usb.handle != NULL ) {
+  if ( garmin->usb.handle != NULL && ok == 0 ) {
+    if ( garmin->verbose != 0 ) {
+      printf("[garmin] (ok = %d) usb_close(%p)\n",ok,garmin->usb.handle);
+    }
     usb_close(garmin->usb.handle);
     garmin->usb.handle = NULL;
   }
