@@ -27,7 +27,6 @@ AC_CHECK_FUNCS([memset strerror])
 AC_C_BIGENDIAN
 
 # Checks for libusb
-
 AC_PATH_PROG(LIBUSB_CONFIG,libusb-config)
 if test -n "${LIBUSB_CONFIG}"; then
    USB_LIBS="`$LIBUSB_CONFIG --libs`"
@@ -36,12 +35,29 @@ else
    AC_MSG_ERROR(cannot build garmintools without libusb)
 fi
 
+# Checks for python
+AC_ARG_WITH(python,[  --with-python		  compile python bindings.],
+[
+if test "${withval}" = "yes"; then
+   PYTHON_SUBDIRS="python" 
+   AC_CHECK_PROG(HAVE_PYTHON, "python", "yes")
+   if test "${HAVE_PYTHON}" != "yes"; then
+      AC_MSG_ERROR([No usable python interpreter found])
+   fi
+fi
+])
+
 PROG_LIBS="$USB_LIBS"
 
 AC_SUBST(USB_CFLAGS)
 AC_SUBST(USB_LIBS)
 AC_SUBST(PROG_LIBS)
+AC_SUBST(PYTHON_SUBDIRS)
 
 AC_CONFIG_FILES([Makefile src/Makefile extras/Makefile])
-AC_OUTPUT
 
+if test "${HAVE_PYTHON}" = "yes"; then
+   AC_CONFIG_FILES([python/Makefile])
+fi
+
+AC_OUTPUT

@@ -2116,7 +2116,14 @@ char * garmin_symbol_name ( symbol_value s );
 /* run.c                                                                     */
 /* ------------------------------------------------------------------------- */
 
-void   garmin_save_runs ( garmin_unit * garmin );
+int           get_lap_index          ( garmin_data * lap, uint32 * lap_index );
+int           get_lap_start_time     ( garmin_data * lap, time_type * start_time );
+int           get_run_track_lap_info ( garmin_data * run,
+                                       uint32      * track_index,
+                                       uint32      * first_lap_index,
+                                       uint32      * last_lap_index );
+
+void          garmin_save_runs       ( garmin_unit * garmin );
 
 
 #endif /* __GARMIN_GARMIN_H__ */
