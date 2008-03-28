@@ -64,6 +64,8 @@ static PyObject* get_info(PyObject* obj, PyObject* args)
   char* product_description = garmin.product.product_description; 
   PyDict_SetItem(dict, PyString_FromString("description"), PyString_FromString(product_description));
 
+  garmin_close(&garmin);
+
   return Py_BuildValue("N", dict);
 }
 
@@ -301,6 +303,7 @@ static PyObject* get_runs(PyObject* obj, PyObject* args)
   }
 
   garmin_free_data(data);
+  garmin_close(&garmin);
 
   return Py_BuildValue("N", dict);  
 }
@@ -309,10 +312,10 @@ static PyObject* get_runs(PyObject* obj, PyObject* args)
 /* Assign python names to the exported functions */
 
 static PyMethodDef MethodTable[] = {
-  {"toggle_verbose", toggle_verbose, METH_VARARGS, "Toggle verbose flag and return its current state, True if turned on, False else."},
+  {"toggle_verbose", toggle_verbose, METH_VARARGS, "Toggle verbose flag and return its new state, True if turned on, False else."},
   {"get_verbose", get_verbose, METH_VARARGS, "Return the current state of the verbose flag, True if turned on, False else."},
-  {"get_info", get_info, METH_VARARGS, "Return a dictionary with device information."},
-  {"get_runs", get_runs, METH_VARARGS, "Return a dictionary with all runs on the device."},
+  {"get_info", get_info, METH_VARARGS, "Return a dictionary with information about the attached unit."},
+  {"get_runs", get_runs, METH_VARARGS, "Return a dictionary with all runs stored on the attached unit."},
   {NULL, NULL, 0, NULL}
 };
 
