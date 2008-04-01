@@ -1,3 +1,22 @@
+/*
+  Garmintools software package
+  Copyright (C) 2006-2008 Dave Bailey
+  
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
 #ifndef __GARMIN_GARMIN_H__
 #define __GARMIN_GARMIN_H__
 
@@ -37,7 +56,7 @@ typedef short           sint16;
 typedef int             sint32;
 typedef float           float32;
 typedef double          float64;
-typedef unsigned char   bool;
+typedef unsigned char   gbool;
 
 
 /* 2^31 semicircles = 180 degrees where N, E are positive, S and W negative. */
@@ -803,7 +822,7 @@ typedef struct D202 {
 
 
 typedef struct D210 {
-  uint16                class;        /* link class; see below           */
+  uint16                link_class;   /* link class; see below           */
   uint8                 subclass[18]; /* sublcass                        */
   char *                ident;        /* variable length string          */
 } D210;
@@ -823,7 +842,7 @@ typedef enum {
 typedef struct D300 {
   position_type     posn;      /* position                        */
   uint32            time;      /* time                            */
-  bool              new_trk;   /* new track segment?              */
+  gbool             new_trk;   /* new track segment?              */
 } D300;
 
 
@@ -832,7 +851,7 @@ typedef struct D301 {
   uint32            time;     /* time                      */
   float32           alt;      /* altitude in meters        */
   float32           dpth;     /* depth in meters           */
-  bool              new_trk;  /* new track segment?        */
+  gbool             new_trk;  /* new track segment?        */
 } D301;
 
 
@@ -842,7 +861,7 @@ typedef struct D302 {
   float32           alt;
   float32           dpth;
   float32           temp;
-  bool              new_trk;
+  gbool             new_trk;
 } D302;
 
 
@@ -861,12 +880,12 @@ typedef struct D304 {
   float32           distance;
   uint8             heart_rate;
   uint8             cadence;
-  bool              sensor;
+  gbool             sensor;
 } D304;
 
 
 typedef struct D310 {
-  bool          dspl;           /* display on the map?        */
+  gbool         dspl;           /* display on the map?        */
   uint8         color;          /* color (same as D108)       */
   char *        trk_ident;      /* null-terminated string     */
 } D310;
@@ -878,7 +897,7 @@ typedef struct D311 {
 
 
 typedef struct D312 {
-  bool          dspl;           /* display on the map?    */
+  gbool         dspl;           /* display on the map?    */
   uint8         color;          /* color (same as D110)   */
   char *        trk_ident;      /* null-terminated string */
 } D312;
@@ -1009,7 +1028,7 @@ typedef struct D650 {
   float32           max_speed;
   float32           max_alt;
   float32           distance;
-  bool              cross_country_flag;
+  gbool             cross_country_flag;
   char *            departure_name;
   char *            departure_ident;
   char *            arrival_name;
@@ -1946,6 +1965,10 @@ typedef enum {
 /* Function prototypes                                                       */
 /* ========================================================================= */
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 /* ------------------------------------------------------------------------- */
 /* packet_id.c                                                               */
 /* ------------------------------------------------------------------------- */
@@ -2124,6 +2147,11 @@ int           get_run_track_lap_info ( garmin_data * run,
                                        uint32      * last_lap_index );
 
 void          garmin_save_runs       ( garmin_unit * garmin );
+
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 
 #endif /* __GARMIN_GARMIN_H__ */

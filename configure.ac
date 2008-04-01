@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([garmintools],[0.05],[dave@daveb.net])
+AC_INIT([garmintools],[0.06],[dave@daveb.net])
 AC_CONFIG_SRCDIR(src/garmin.h)
 AC_CONFIG_HEADERS(src/config.h:src/config.h.in)
 AM_INIT_AUTOMAKE(1.6)
@@ -54,7 +54,11 @@ AC_SUBST(USB_LIBS)
 AC_SUBST(PROG_LIBS)
 AC_SUBST(PYTHON_SUBDIRS)
 
-AC_CONFIG_FILES([Makefile src/Makefile extras/Makefile])
+AC_CONFIG_FILES([Makefile \
+  src/Makefile \
+  doc/Makefile \
+  doc/man/Makefile \
+  extras/Makefile])
 
 if test "${HAVE_PYTHON}" = "yes"; then
    AC_CONFIG_FILES([python/Makefile])

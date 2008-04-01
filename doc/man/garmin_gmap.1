@@ -1,0 +1,19 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.TH GARMIN-FORERUNNER-TOOLS 1 "March 31, 2008"
+.SH NAME
+garmin_gmap \- convert .gmn files into xml data for use with goole maps
+.SH SYNOPSIS
+.B garmin_gmap
+.I file
+.PP
+\fBgarmin_gmap\fP reads a .gmp file as produced by \fBgarmin_save_runs\fP, and
+writes to standard output the encoded polyline representation (for
+Google maps) along with other information such as the start and center
+latitude/longitude, and the lat/lon bounding box.
+.SH SEE ALSO
+.BR garmin_get_info (1),
+.BR garmin_save_runs (1),
+.BR garmin_dump (1).
+.br
+.SH AUTHOR
+garmin_get_info was written by Dave Bailey.

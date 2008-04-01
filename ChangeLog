@@ -1,3 +1,9 @@
+01 Apr 2008	Dave Bailey <dave at daveb dot net>
+
+	0.06 - Added man pages (thanks to Ralf Treinen).  Added copyright
+	       notices.  Changes to support compilation with a C++ compiler.
+	       Python updates.
+
 27 Jul 2007	Dave Bailey <dave at daveb dot net>
 
 	0.05 - Added support for the D1015 lap data type.

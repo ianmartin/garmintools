@@ -1,3 +1,3 @@
-SUBDIRS = src extras @PYTHON_SUBDIRS@
+SUBDIRS = src doc extras @PYTHON_SUBDIRS@
 
 EXTRA_DIST = TODO BUGS

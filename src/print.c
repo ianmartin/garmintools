@@ -1,3 +1,22 @@
+/*
+  Garmintools software package
+  Copyright (C) 2006-2008 Dave Bailey
+  
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
 #include "config.h"
 #include <time.h>
 #include <string.h>
@@ -955,7 +974,7 @@ garmin_print_d210 ( D210 * x, FILE * fp, int spaces )
 {
   print_spaces(fp,spaces);
   fprintf(fp,"<route_link type=\"210\" class=\"%s\" ident=\"%s\">\n",
-	  garmin_d210_class(x->class),x->ident);
+	  garmin_d210_class(x->link_class),x->ident);
   GARMIN_TAGU8B(1,"route_link_subclass",x->subclass,18);
   close_tag("route_link",fp,spaces);
 }

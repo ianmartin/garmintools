@@ -1,0 +1,29 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.TH GARMIN-FORERUNNER-TOOLS 1 "March 31, 2008"
+.SH NAME
+garmin_save_runs \- retrieve track logs from a Forerunner device.
+.SH SYNOPSIS
+.B garmin_save_runs
+.PP
+\fBgarmin_save_runs\fP retrieves track logs from a Garmin Forerunner
+device connected to an USB port, and saves the information into files.
+Files are saved with the extension ".gmn" and are named by the run
+start time (e.g. '20070121T151814.gmn').  The .gmn file format is a
+binary file format that can be unpacked with he \fBgarmin_dump\fP or
+\fBgarmin_gmap\fP utilities.  It is substantially more efficient than
+the bloated XML format that Garmin uses.
+
+The output of garmin_save_runs will tell you where on your filesystem
+the actual .gmn files were saved.  The default is to save them in a
+directory tree (by year and month) under the current directory.  You
+can override this by setting the environment variable GARMIN_SAVE_RUNS
+to whatever directory you like. Existing files are not overwritten.
+
+.SH SEE ALSO
+.BR garmin_get_info (1),
+.BR garmin_dump (1),
+.BR garmin_gmap (1).
+.br
+.SH AUTHOR
+garmin_save_runs was written by Dave Bailey.
+
