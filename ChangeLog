@@ -1,3 +1,7 @@
+02 Apr 2008	Dave Bailey <dave at daveb dot net>
+
+	0.07 - Fix missing man pages in dist build.
+
 01 Apr 2008	Dave Bailey <dave at daveb dot net>
 
 	0.06 - Added man pages (thanks to Ralf Treinen).  Added copyright
