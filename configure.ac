@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([garmintools],[0.07],[dave@daveb.net])
+AC_INIT([garmintools],[0.08],[dave@daveb.net])
 AC_CONFIG_SRCDIR(src/garmin.h)
 AC_CONFIG_HEADERS(src/config.h:src/config.h.in)
 AM_INIT_AUTOMAKE(1.6)

@@ -34,7 +34,8 @@ bin_PROGRAMS = \
 	garmin_save_runs \
 	garmin_dump \
 	garmin_get_info \
-	garmin_gmap
+	garmin_gmap \
+	garmin_gchart
 
 AM_CFLAGS = $(USB_CFLAGS) -Wall
 
@@ -53,3 +54,11 @@ garmin_get_info_LDADD = $(lib_LTLIBRARIES) @LDFLAGS@ @PROG_LIBS@
 garmin_gmap_SOURCES = garmin_gmap.c
 
 garmin_gmap_LDADD = $(lib_LTLIBRARIES) @LDFLAGS@ @PROG_LIBS@ -lm
+
+garmin_gchart_SOURCES = garmin_gchart.c
+
+garmin_gchart_LDADD = $(lib_LTLIBRARIES) @LDFLAGS@ @PROG_LIBS@ -lm
+
+garmin_gpx_SOURCES = garmin_gpx.c
+
+garmin_gpx_LDADD = $(lib_LTLIBRARIES) @LDFLAGS@ @PROG_LIBS@ -lm
