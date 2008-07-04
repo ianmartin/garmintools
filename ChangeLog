@@ -1,5 +1,9 @@
 04 Jul 2008	Dave Bailey <dave at daveb dot net>
 
+	0.09 - Fixed botched patch.
+
+04 Jul 2008	Dave Bailey <dave at daveb dot net>
+
 	0.08 - Added garmin_gchart (from Matt Farmer).  Added garmin_gpx
 	       (from Chris AtLee).  Changed a few structs for compatibility
 	       with C++ compilers.

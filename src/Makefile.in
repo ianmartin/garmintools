@@ -162,7 +162,8 @@ bin_PROGRAMS = \
 	garmin_dump \
 	garmin_get_info \
 	garmin_gmap \
-	garmin_gchart
+	garmin_gchart \
+	garmin_gpx
 
 
 AM_CFLAGS = $(USB_CFLAGS) -Wall
@@ -203,7 +204,7 @@ am_libgarmin_la_OBJECTS = usb_comm.lo byte_util.lo unpack.lo pack.lo \
 libgarmin_la_OBJECTS = $(am_libgarmin_la_OBJECTS)
 bin_PROGRAMS = garmin_save_runs$(EXEEXT) garmin_dump$(EXEEXT) \
 	garmin_get_info$(EXEEXT) garmin_gmap$(EXEEXT) \
-	garmin_gchart$(EXEEXT)
+	garmin_gchart$(EXEEXT) garmin_gpx$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_garmin_dump_OBJECTS = garmin_dump.$(OBJEXT)
@@ -222,6 +223,10 @@ am_garmin_gmap_OBJECTS = garmin_gmap.$(OBJEXT)
 garmin_gmap_OBJECTS = $(am_garmin_gmap_OBJECTS)
 garmin_gmap_DEPENDENCIES = libgarmin.la
 garmin_gmap_LDFLAGS =
+am_garmin_gpx_OBJECTS = garmin_gpx.$(OBJEXT)
+garmin_gpx_OBJECTS = $(am_garmin_gpx_OBJECTS)
+garmin_gpx_DEPENDENCIES = libgarmin.la
+garmin_gpx_LDFLAGS =
 am_garmin_save_runs_OBJECTS = garmin_save_runs.$(OBJEXT)
 garmin_save_runs_OBJECTS = $(am_garmin_save_runs_OBJECTS)
 garmin_save_runs_DEPENDENCIES = libgarmin.la
@@ -236,6 +241,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/garmin_gchart.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/garmin_get_info.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/garmin_gmap.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/garmin_gpx.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/garmin_save_runs.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pack.Plo ./$(DEPDIR)/packet_id.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/print.Plo ./$(DEPDIR)/protocol.Plo \
@@ -251,12 +257,13 @@ LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 DIST_SOURCES = $(libgarmin_la_SOURCES) $(garmin_dump_SOURCES) \
 	$(garmin_gchart_SOURCES) $(garmin_get_info_SOURCES) \
-	$(garmin_gmap_SOURCES) $(garmin_save_runs_SOURCES)
+	$(garmin_gmap_SOURCES) $(garmin_gpx_SOURCES) \
+	$(garmin_save_runs_SOURCES)
 HEADERS = $(garmintoolsinclude_HEADERS)
 
 DIST_COMMON = $(garmintoolsinclude_HEADERS) Makefile.am Makefile.in \
 	config.h.in
-SOURCES = $(libgarmin_la_SOURCES) $(garmin_dump_SOURCES) $(garmin_gchart_SOURCES) $(garmin_get_info_SOURCES) $(garmin_gmap_SOURCES) $(garmin_save_runs_SOURCES)
+SOURCES = $(libgarmin_la_SOURCES) $(garmin_dump_SOURCES) $(garmin_gchart_SOURCES) $(garmin_get_info_SOURCES) $(garmin_gmap_SOURCES) $(garmin_gpx_SOURCES) $(garmin_save_runs_SOURCES)
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -356,6 +363,9 @@ garmin_get_info$(EXEEXT): $(garmin_get_info_OBJECTS) $(garmin_get_info_DEPENDENC
 garmin_gmap$(EXEEXT): $(garmin_gmap_OBJECTS) $(garmin_gmap_DEPENDENCIES) 
 	@rm -f garmin_gmap$(EXEEXT)
 	$(LINK) $(garmin_gmap_LDFLAGS) $(garmin_gmap_OBJECTS) $(garmin_gmap_LDADD) $(LIBS)
+garmin_gpx$(EXEEXT): $(garmin_gpx_OBJECTS) $(garmin_gpx_DEPENDENCIES) 
+	@rm -f garmin_gpx$(EXEEXT)
+	$(LINK) $(garmin_gpx_LDFLAGS) $(garmin_gpx_OBJECTS) $(garmin_gpx_LDADD) $(LIBS)
 garmin_save_runs$(EXEEXT): $(garmin_save_runs_OBJECTS) $(garmin_save_runs_DEPENDENCIES) 
 	@rm -f garmin_save_runs$(EXEEXT)
 	$(LINK) $(garmin_save_runs_LDFLAGS) $(garmin_save_runs_OBJECTS) $(garmin_save_runs_LDADD) $(LIBS)
@@ -373,6 +383,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/garmin_gchart.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/garmin_get_info.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/garmin_gmap.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/garmin_gpx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/garmin_save_runs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pack.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/packet_id.Plo@am__quote@
