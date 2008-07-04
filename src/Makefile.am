@@ -35,7 +35,8 @@ bin_PROGRAMS = \
 	garmin_dump \
 	garmin_get_info \
 	garmin_gmap \
-	garmin_gchart
+	garmin_gchart \
+	garmin_gpx
 
 AM_CFLAGS = $(USB_CFLAGS) -Wall
 
