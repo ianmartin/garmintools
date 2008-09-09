@@ -2,5 +2,6 @@
 
   * Aggregates such as avg/max hr/speed/altitude
   * Heart rate graphs, elevation profiles, and other GD-based graphs
+  * GPX extensions for PyTrainer
 
 - Should also test the Forerunner 205 and the Edge units.
