@@ -147,9 +147,9 @@ garmintoolsincludedir = $(includedir)
 
 garmintoolsinclude_HEADERS = garmin.h
 
-lib_LTLIBRARIES = libgarmin.la
+lib_LTLIBRARIES = libgarmintools.la
 
-libgarmin_la_SOURCES = \
+libgarmintools_la_SOURCES = \
 	usb_comm.c \
 	byte_util.c \
 	unpack.c \
@@ -173,7 +173,7 @@ libgarmin_la_SOURCES = \
 # Interfaces changed/added/removed => c+1:0:a
 # Interfaces added => c+1:0:a+1
 # Interfaces removed => c+1:0:0
-libgarmin_la_LDFLAGS = \
+libgarmintools_la_LDFLAGS = \
 	-version-info 6:0:2
 
 
@@ -218,11 +218,11 @@ CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(lib_LTLIBRARIES)
 
-libgarmin_la_LIBADD =
-am_libgarmin_la_OBJECTS = usb_comm.lo byte_util.lo unpack.lo pack.lo \
-	protocol.lo command.lo packet_id.lo print.lo scan.lo \
+libgarmintools_la_LIBADD =
+am_libgarmintools_la_OBJECTS = usb_comm.lo byte_util.lo unpack.lo \
+	pack.lo protocol.lo command.lo packet_id.lo print.lo scan.lo \
 	datatype.lo symbol_name.lo run.lo
-libgarmin_la_OBJECTS = $(am_libgarmin_la_OBJECTS)
+libgarmintools_la_OBJECTS = $(am_libgarmintools_la_OBJECTS)
 bin_PROGRAMS = garmin_save_runs$(EXEEXT) garmin_dump$(EXEEXT) \
 	garmin_get_info$(EXEEXT) garmin_gmap$(EXEEXT) \
 	garmin_gchart$(EXEEXT) garmin_gpx$(EXEEXT)
@@ -230,27 +230,27 @@ PROGRAMS = $(bin_PROGRAMS)
 
 am_garmin_dump_OBJECTS = garmin_dump.$(OBJEXT)
 garmin_dump_OBJECTS = $(am_garmin_dump_OBJECTS)
-garmin_dump_DEPENDENCIES = libgarmin.la
+garmin_dump_DEPENDENCIES = libgarmintools.la
 garmin_dump_LDFLAGS =
 am_garmin_gchart_OBJECTS = garmin_gchart.$(OBJEXT)
 garmin_gchart_OBJECTS = $(am_garmin_gchart_OBJECTS)
-garmin_gchart_DEPENDENCIES = libgarmin.la
+garmin_gchart_DEPENDENCIES = libgarmintools.la
 garmin_gchart_LDFLAGS =
 am_garmin_get_info_OBJECTS = garmin_get_info.$(OBJEXT)
 garmin_get_info_OBJECTS = $(am_garmin_get_info_OBJECTS)
-garmin_get_info_DEPENDENCIES = libgarmin.la
+garmin_get_info_DEPENDENCIES = libgarmintools.la
 garmin_get_info_LDFLAGS =
 am_garmin_gmap_OBJECTS = garmin_gmap.$(OBJEXT)
 garmin_gmap_OBJECTS = $(am_garmin_gmap_OBJECTS)
-garmin_gmap_DEPENDENCIES = libgarmin.la
+garmin_gmap_DEPENDENCIES = libgarmintools.la
 garmin_gmap_LDFLAGS =
 am_garmin_gpx_OBJECTS = garmin_gpx.$(OBJEXT)
 garmin_gpx_OBJECTS = $(am_garmin_gpx_OBJECTS)
-garmin_gpx_DEPENDENCIES = libgarmin.la
+garmin_gpx_DEPENDENCIES = libgarmintools.la
 garmin_gpx_LDFLAGS =
 am_garmin_save_runs_OBJECTS = garmin_save_runs.$(OBJEXT)
 garmin_save_runs_OBJECTS = $(am_garmin_save_runs_OBJECTS)
-garmin_save_runs_DEPENDENCIES = libgarmin.la
+garmin_save_runs_DEPENDENCIES = libgarmintools.la
 garmin_save_runs_LDFLAGS =
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I.
@@ -276,7 +276,7 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(libgarmin_la_SOURCES) $(garmin_dump_SOURCES) \
+DIST_SOURCES = $(libgarmintools_la_SOURCES) $(garmin_dump_SOURCES) \
 	$(garmin_gchart_SOURCES) $(garmin_get_info_SOURCES) \
 	$(garmin_gmap_SOURCES) $(garmin_gpx_SOURCES) \
 	$(garmin_save_runs_SOURCES)
@@ -284,7 +284,7 @@ HEADERS = $(garmintoolsinclude_HEADERS)
 
 DIST_COMMON = $(garmintoolsinclude_HEADERS) $(srcdir)/Makefile.in \
 	Makefile.am config.h.in
-SOURCES = $(libgarmin_la_SOURCES) $(garmin_dump_SOURCES) $(garmin_gchart_SOURCES) $(garmin_get_info_SOURCES) $(garmin_gmap_SOURCES) $(garmin_gpx_SOURCES) $(garmin_save_runs_SOURCES)
+SOURCES = $(libgarmintools_la_SOURCES) $(garmin_dump_SOURCES) $(garmin_gchart_SOURCES) $(garmin_get_info_SOURCES) $(garmin_gmap_SOURCES) $(garmin_gpx_SOURCES) $(garmin_save_runs_SOURCES)
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -341,8 +341,8 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libgarmin.la: $(libgarmin_la_OBJECTS) $(libgarmin_la_DEPENDENCIES) 
-	$(LINK) -rpath $(libdir) $(libgarmin_la_LDFLAGS) $(libgarmin_la_OBJECTS) $(libgarmin_la_LIBADD) $(LIBS)
+libgarmintools.la: $(libgarmintools_la_OBJECTS) $(libgarmintools_la_DEPENDENCIES) 
+	$(LINK) -rpath $(libdir) $(libgarmintools_la_LDFLAGS) $(libgarmintools_la_OBJECTS) $(libgarmintools_la_LIBADD) $(LIBS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)

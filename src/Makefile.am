@@ -2,9 +2,9 @@ garmintoolsincludedir = $(includedir)
 
 garmintoolsinclude_HEADERS = garmin.h
 
-lib_LTLIBRARIES = libgarmin.la
+lib_LTLIBRARIES = libgarmintools.la
 
-libgarmin_la_SOURCES = \
+libgarmintools_la_SOURCES = \
 	usb_comm.c \
 	byte_util.c \
 	unpack.c \
@@ -27,7 +27,7 @@ libgarmin_la_SOURCES = \
 # Interfaces added => c+1:0:a+1
 # Interfaces removed => c+1:0:0
 
-libgarmin_la_LDFLAGS = \
+libgarmintools_la_LDFLAGS = \
 	-version-info 6:0:2
 
 bin_PROGRAMS = \
