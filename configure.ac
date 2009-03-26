@@ -3,7 +3,7 @@
 AC_INIT([garmintools],[0.10],[dave@daveb.net])
 AC_CONFIG_SRCDIR(src/garmin.h)
 AC_CONFIG_HEADERS(src/config.h:src/config.h.in)
-AM_INIT_AUTOMAKE(1.6)
+AM_INIT_AUTOMAKE
 
 # Checks for programs.
 AC_PROG_CC
